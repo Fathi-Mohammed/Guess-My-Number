@@ -19,47 +19,65 @@ let score = 20;
 
 highScoreElement.textContent = highScore;
 scoreElement.textContent = score;
+checkInputElement.focus();
 
-checkButton.addEventListener("click", function () {
+function gameStartFunction() {
   let checkInputValue = Number(checkInputElement.value);
 
-  if (checkInputValue === randomNumber) {
-    gameMessage.textContent = "Correct 🎉";
-    secretNumberElement.textContent = randomNumber;
-    highScore = highScore > score ? highScore : score;
-    highScoreElement.textContent = highScore;
-    checkButton.disabled = true;
-    document.body.style.backgroundColor = "#60b347";
-    winGameSound.play();
-  } else if (checkInputValue > randomNumber) {
-    wrongSound.play();
-    gameMessage.textContent = "↗️ Too Hight Number";
-    score--;
-    scoreElement.textContent = score;
-    if (score < 1) {
-      scoreElement.textContent = "0";
-      gameMessage.textContent = "😕 Game Over";
-      gameOverSound.play();
-      checkButton.disabled = true;
-    }
-  } else if (checkInputValue < randomNumber) {
-    gameMessage.textContent = "↘️ Too Low Number";
-    wrongSound.play();
-    score--;
-    scoreElement.textContent = score;
+  if (checkInputValue > 20 || checkInputValue <= 0) {
+    document.querySelector(".error-message").classList.add("active");
+  } else {
+    document.querySelector(".error-message").classList.remove("active");
 
-    if (score < 1) {
-      scoreElement.textContent = "0";
-      gameMessage.textContent = "😕 Game Over";
+    if (checkInputValue === randomNumber) {
+      gameMessage.textContent = "Correct 🎉";
+      secretNumberElement.textContent = randomNumber;
+      highScore = highScore > score ? highScore : score;
+      highScoreElement.textContent = highScore;
       checkButton.disabled = true;
-      gameOverSound.play();
+      document.body.style.backgroundColor = "#60b347";
+      winGameSound.play();
+    } else if (checkInputValue > randomNumber) {
+      wrongSound.play();
+      gameMessage.textContent = "↗️ Too Hight Number";
+      score--;
+      scoreElement.textContent = score;
+      checkInputElement.value = "";
+
+      if (score < 1) {
+        scoreElement.textContent = "0";
+        gameMessage.textContent = "😕 Game Over";
+        gameOverSound.play();
+        checkButton.disabled = true;
+      }
+    } else if (checkInputValue < randomNumber) {
+      gameMessage.textContent = "↘️ Too Low Number";
+      wrongSound.play();
+      score--;
+      scoreElement.textContent = score;
+      checkInputElement.value = "";
+
+      if (score < 1) {
+        scoreElement.textContent = "0";
+        gameMessage.textContent = "😕 Game Over";
+        checkButton.disabled = true;
+        gameOverSound.play();
+      }
     }
+  }
+}
+
+checkButton.addEventListener("click", gameStartFunction);
+checkInputElement.addEventListener("keydown", function (event) {
+  if (event.keyCode === 13 || event.key === "Enter") {
+    gameStartFunction();
   }
 });
 
 againButton.addEventListener("click", function () {
   gameMessage.textContent = "Start guessing...";
   checkInputElement.value = "";
+  checkInputElement.focus();
   randomNumber = Math.floor(Math.random() * 20) + 1;
   secretNumberElement.textContent = randomNumber;
   score = 20;
